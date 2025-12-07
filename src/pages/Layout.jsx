@@ -89,8 +89,8 @@ export default function Layout({ children, currentPageName }) {
       )}
       
       {/* Top Bar */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-50 transition-colors duration-300">
-        <div className="h-full px-6 flex items-center justify-between">
+      <div className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-50 transition-colors duration-300">
+        <div className="px-6 py-3 flex items-center justify-between">
           {/* Logo */}
           <Link to={createPageUrl("Dashboard")}>
             <img 
@@ -105,8 +105,8 @@ export default function Layout({ children, currentPageName }) {
             />
           </Link>
 
-          {/* Center Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          {/* Center Navigation (Desktop) */}
+          <nav className="hidden lg:flex items-center gap-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.url;
@@ -166,21 +166,45 @@ export default function Layout({ children, currentPageName }) {
             </Link>
           </div>
         </div>
+
+        {/* Heading Bar (Mobile) */}
+        <div className="lg:hidden px-6 pb-3">
+          <div className="flex gap-2 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.url;
+              return (
+                <Link key={`head-${item.url}`} to={item.url} className="flex-shrink-0">
+                  <button className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                    isActive 
+                      ? 'bg-black dark:bg-white text-white dark:text-black' 
+                      : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                    <span>{item.title}</span>
+                  </button>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 z-50">
-        <nav className="h-full flex items-center justify-around px-2">
-          {navigationItems.slice(0, 5).map((item) => {
+      {/* Mobile Bottom Nav (Sliding) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 z-50">
+        <nav className="h-16 flex items-center gap-2 px-4 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.url;
             return (
-              <Link key={item.url} to={item.url} className="flex-1">
-                <button className={`w-full flex flex-col items-center gap-1 py-2 ${
-                  isActive ? 'text-black dark:text-white' : 'text-gray-600 dark:text-gray-400'
+              <Link key={item.url} to={item.url} className="flex-shrink-0">
+                <button className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+                  isActive 
+                    ? 'bg-black dark:bg-white text-white dark:text-black' 
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300'
                 }`}>
-                  <Icon className="w-5 h-5" />
-                  <span className="text-xs">{item.title}</span>
+                  <Icon className="w-6 h-6" />
+                  <span className="text-sm font-semibold">{item.title}</span>
                 </button>
               </Link>
             );
@@ -189,7 +213,7 @@ export default function Layout({ children, currentPageName }) {
       </div>
 
       {/* Main Content */}
-      <div className="pt-16 pb-16 lg:pb-0 relative z-10">
+      <div className="pt-24 pb-20 lg:pt-16 lg:pb-0 relative z-10">
         {children}
       </div>
     </div>
