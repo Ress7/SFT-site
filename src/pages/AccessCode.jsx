@@ -97,7 +97,7 @@ export default function AccessCode() {
 
   const handleSubmit = () => {
     const normalized = code.trim().toUpperCase();
-    if (VALID_CODES.has(normalized)) {
+    if (normalized === "100608") {
       localStorage.setItem("inviteCodeVerified", "true");
       setError(null);
       navigate("/createaccount");

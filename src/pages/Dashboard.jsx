@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { getPositions, getTrades } from "@/api/paperBroker";
-import { fetchQuote, isMarketConnected, getProvider } from "@/api/market";
+import { fetchQuote } from "@/api/market";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -64,11 +64,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-transparent p-4 md:p-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto space-y-6">
-        {!isMarketConnected() && (
-          <div className="w-full mb-2 p-3 rounded-md border border-yellow-300 bg-yellow-50/60 text-yellow-800">
-            {`Market data is not connected. Add your ${getProvider() === 'finnhub' ? 'Finnhub token' : 'Alpha Vantage key'} in Settings to show live valuations.`}
-          </div>
-        )}
+        {/* Market data banner removed: site uses a shared Finnhub token */}
         {(() => { try { const raw = localStorage.getItem('sf_exchange_connections'); const list = raw ? JSON.parse(raw) : []; return list.filter(c => c.status === 'connected').length === 0; } catch { return true; } })() && (
           <div className="w-full mb-2 p-3 rounded-md border border-blue-300 bg-blue-50/60 text-blue-800">
             No brokerage API connected. Connect your exchange in Settings to enable Orion AI trading.

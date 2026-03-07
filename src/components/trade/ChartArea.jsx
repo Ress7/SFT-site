@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Maximize2, Minimize2, Activity, Newspaper, List, Settings2, Camera } from "lucide-react";
-// removed unused imports
+import { createFinnhubSocket } from "@/api/finnhub";
 
 export default function ChartArea({ selectedAsset }) {
   const containerRef = useRef(null);
@@ -12,6 +12,8 @@ export default function ChartArea({ selectedAsset }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [timeframe, setTimeframe] = useState("D");
   const [activeIndicator, setActiveIndicator] = useState(null);
+  const [trades, setTrades] = useState([]);
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (!selectedAsset || !containerRef.current) return;
@@ -84,6 +86,31 @@ export default function ChartArea({ selectedAsset }) {
     total: Math.floor(Math.random() * 50000),
     type: Math.random() > 0.5 ? 'bid' : 'ask'
   })).sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+
+  useEffect(() => {
+    if (!selectedAsset?.symbol) return;
+    if (socketRef.current) {
+      try { socketRef.current.close(); } catch {}
+      socketRef.current = null;
+    }
+    setTrades([]);
+    const api = createFinnhubSocket({
+      symbols: [selectedAsset.symbol],
+      onTrade: (items) => {
+        setTrades(prev => {
+          const next = [...items, ...prev].slice(0, 50);
+          return next;
+        });
+      }
+    });
+    socketRef.current = api;
+    return () => {
+      if (socketRef.current) {
+        try { socketRef.current.close(); } catch {}
+      }
+      socketRef.current = null;
+    };
+  }, [selectedAsset?.symbol]);
 
   return (
     <>
@@ -175,29 +202,46 @@ export default function ChartArea({ selectedAsset }) {
                 </div>
 
                 <TabsContent value="orderbook" className="flex-1 p-0 overflow-y-auto mt-0 custom-scrollbar">
-                    <div className="grid grid-cols-3 gap-4 p-2 text-xs font-mono sticky top-0 bg-gray-100 dark:bg-gray-900 text-gray-500 z-10">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-2 text-xs font-mono sticky top-0 bg-gray-100 dark:bg-gray-900 text-gray-500 z-10">
                         <div>Price (USD)</div>
                         <div className="text-right">Size</div>
-                        <div className="text-right">Total (USD)</div>
+                        <div className="hidden sm:block text-right">Total (USD)</div>
                     </div>
                     <div className="p-2 space-y-1">
                         {orderBook.map((order, i) => (
-                            <div key={i} className="grid grid-cols-3 gap-4 text-xs font-mono hover:bg-gray-100 dark:hover:bg-gray-800/50 p-1 rounded">
+                            <div key={i} className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs font-mono hover:bg-gray-100 dark:hover:bg-gray-800/50 p-1 rounded">
                                 <div className={order.type === 'ask' ? 'text-red-500' : 'text-green-500'}>
                                     {order.price}
                                 </div>
                                 <div className="text-right text-gray-600 dark:text-gray-300">{order.size}</div>
-                                <div className="text-right text-gray-500 dark:text-gray-400">{order.total.toLocaleString()}</div>
+                                <div className="hidden sm:block text-right text-gray-500 dark:text-gray-400">{order.total.toLocaleString()}</div>
                             </div>
                         ))}
                     </div>
                 </TabsContent>
 
-                <TabsContent value="trades" className="flex-1 p-4 mt-0">
-                    <div className="text-center text-gray-500 text-sm py-8">
+                <TabsContent value="trades" className="flex-1 p-2 sm:p-4 mt-0 overflow-y-auto">
+                    {(!trades || trades.length === 0) ? (
+                      <div className="text-center text-gray-500 text-sm py-8">
                         <Activity className="w-8 h-8 mx-auto mb-2 opacity-50" />
                         Live trade feed connecting...
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        {trades.map((t, idx) => (
+                          <div key={idx} className="flex items-center justify-between text-xs font-mono p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-900">
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-500">{new Date(t.t).toLocaleTimeString()}</span>
+                              <span className="text-gray-900 dark:text-white">{t.s}</span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <span className="text-gray-900 dark:text-white">{t.p}</span>
+                              <span className="text-gray-500">{t.v}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                 </TabsContent>
 
                 <TabsContent value="news" className="flex-1 p-4 mt-0">

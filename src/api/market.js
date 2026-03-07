@@ -1,5 +1,5 @@
 export function getProvider() {
-  try { return localStorage.getItem('marketProvider') || 'finnhub'; } catch { return 'finnhub'; }
+  return 'finnhub';
 }
 
 export function getFinnhubToken() {
@@ -89,6 +89,5 @@ export async function fetchDailySeries(symbol) {
 }
 
 export function isMarketConnected() {
-  const provider = getProvider();
-  return provider === 'finnhub' ? !!getFinnhubToken() : !!getAlphaKey();
+  return !!getFinnhubToken();
 }

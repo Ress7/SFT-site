@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Sparkles, Send, ArrowLeft, Brain, Zap, Shield, TrendingUp, ChevronRight } from "lucide-react";
+import { Sparkles, ArrowLeft, Brain, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
@@ -93,10 +92,63 @@ function TypingIndicator() {
 }
 
 const SUGGESTED_QUESTIONS = [
-  "Who are you, Orion?",
-  "What makes Stoneforge different?",
-  "How does the AI trading work?",
-  "Is my money safe with you?"
+  "What is Stoneforge Trading?",
+  "What makes Orion different?",
+  "Are you a broker?",
+  "How does Stoneforge reduce risk?"
+];
+
+const PRESET_RESPONSES = [
+  {
+    title: "What is Stoneforge Trading?",
+    content:
+      "Stoneforge Trading is an AI-powered trading intelligence platform designed to transform how the next generation approaches global markets.\n\nWe are not a broker.\nWe do not custody funds.\nWe operate as the intelligence layer between retail investors and institutional-grade strategy.\nStoneforge is building the Bloomberg Terminal for Gen Z.\n\nConfidence Score: 98%",
+  },
+  {
+    title: "What makes Orion different?",
+    content:
+      "Orion is not a signal generator.\nIt performs multi-timeframe analysis, volatility regime detection, sentiment modeling, institutional flow interpretation, and portfolio risk simulation.\nEvery output includes structured reasoning and confidence scoring.\n\nConfidence Score: 96%",
+  },
+  {
+    title: "Are you a broker?",
+    content:
+      "No.\nStoneforge does not manage capital or execute trades without authorization.\nUsers maintain full control within their brokerage accounts.\n\nConfidence Score: 100%",
+  },
+  {
+    title: "How does Stoneforge reduce risk?",
+    content:
+      "Stoneforge integrates:\n• Probability-based scoring\n• Drawdown modeling\n• Volatility classification\n• Portfolio impact simulation\n• Guardrail-based automation\n\nConfidence Score: 94%",
+  },
+  {
+    title: "What is Verified Social Trading?",
+    content:
+      "All shared strategies include:\n• Verified performance\n• Real drawdown transparency\n• Risk-adjusted metrics\n\nTrust is infrastructure, not marketing.\n\nConfidence Score: 95%",
+  },
+  {
+    title: "What markets does Stoneforge support?",
+    content:
+      "Stoneforge is designed for multi-asset intelligence across:\n• Equities\n• Crypto\n• Forex\n• Commodities\n\nInstitutional-grade analysis for global markets.\n\nConfidence Score: 97%",
+  },
+  {
+    title: "How does Stoneforge make money?",
+    content:
+      "Revenue sources:\n• Premium subscriptions\n• Performance-based copy trading\n• Institutional licensing\n\nTarget gross margin: 75–80%.\n\nConfidence Score: 93%",
+  },
+  {
+    title: "Why is this the Bloomberg for Gen Z?",
+    content:
+      "Bloomberg delivers institutional tools.\nStoneforge delivers institutional AI, mobile-native UX, and verified social transparency.\n\nConfidence Score: 99%",
+  },
+  {
+    title: "Is it beginner friendly?",
+    content:
+      "Yes.\nOrion translates complex quantitative analysis into structured clarity.\n\nConfidence Score: 95%",
+  },
+  {
+    title: "What is the long-term vision?",
+    content:
+      "By 2028:\n• 5M+ users\n• Multi-region expansion\n• Institutional partnerships\n• IPO-ready infrastructure\n\nConfidence Score: 97%",
+  },
 ];
 
 // Spline 3D Character component with High-Tech HUD
@@ -173,16 +225,9 @@ function OrionAvatar({ isSpeaking }) {
 }
 
 export default function MeetOrion() {
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content: "Hello. I'm Orion — the AI engine that powers Stoneforge Trading.\n\nI monitor global markets 24/7, execute trades with sub-100ms precision, and manage risk while you focus on living your life. Think of me as your tireless analyst, strategist, and executor — all in one.\n\nI'm here to answer your questions about what I do, how Stoneforge works, and why we're building the future of democratized trading.\n\nWhat would you like to know?"
-    }
-  ]);
-  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -192,30 +237,13 @@ export default function MeetOrion() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  const sendMessage = async (messageText) => {
-    const userMessage = messageText || input.trim();
-    if (!userMessage || isLoading) return;
-
-    const newMessages = [...messages, { role: "user", content: userMessage }];
-    setMessages(newMessages);
-    setInput("");
+  const selectResponse = (title) => {
+    const found = PRESET_RESPONSES.find((r) => r.title === title) || PRESET_RESPONSES[0];
     setIsLoading(true);
-
-    const conversationHistory = newMessages.map(m => 
-      `${m.role === 'user' ? 'User' : 'Orion'}: ${m.content}`
-    ).join('\n\n');
-
-    const response = "I analyze global markets continuously, looking for momentum shifts, structural patterns, and risk signals. Think of me as a tireless analyst with perfect recall and instant execution. While I won’t give personal investment advice, I can explain how Stoneforge’s automation, backtesting, and risk tooling help traders operate with more discipline and speed.";
-
-    setMessages([...newMessages, { role: "assistant", content: response }]);
-    setIsLoading(false);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+    setTimeout(() => {
+      setMessages([{ role: "assistant", content: found.content }]);
+      setIsLoading(false);
+    }, 600);
   };
 
   return (
@@ -282,7 +310,7 @@ export default function MeetOrion() {
                   {SUGGESTED_QUESTIONS.map((q, i) => (
                     <button
                       key={i}
-                      onClick={() => sendMessage(q)}
+                      onClick={() => selectResponse(q)}
                       className="group relative px-4 py-3 bg-white/5 hover:bg-purple-900/20 border border-white/10 hover:border-purple-500/50 rounded-lg text-left transition-all overflow-hidden"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -297,31 +325,27 @@ export default function MeetOrion() {
             </div>
           )}
 
-          {/* Input Area */}
+          {/* Button Group Area (replaces input) */}
           <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
             <div className="max-w-3xl mx-auto">
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-30 group-hover:opacity-70 transition duration-500 blur" />
-                <div className="relative flex gap-3 p-2 bg-black/80 backdrop-blur-xl rounded-2xl border border-white/10 items-center">
-                  <div className="pl-3 hidden md:block">
+                <div className="relative p-3 bg-black/80 backdrop-blur-xl rounded-2xl border border-white/10">
+                  <div className="pl-1 pb-2 hidden md:flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]" />
+                    <span className="text-[10px] font-mono text-gray-500 tracking-widest uppercase">Orion Presets</span>
                   </div>
-                  <Input
-                    ref={inputRef}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Initialize command or query..."
-                    className="flex-1 bg-transparent border-0 text-white placeholder:text-gray-600 focus-visible:ring-0 h-12 font-mono text-sm"
-                    disabled={isLoading}
-                  />
-                  <Button
-                    onClick={() => sendMessage()}
-                    disabled={!input.trim() || isLoading}
-                    className="bg-white text-black hover:bg-gray-200 h-10 px-6 rounded-lg font-mono text-xs font-bold tracking-wider transition-all"
-                  >
-                    {isLoading ? 'PROCESSING' : 'TRANSMIT'}
-                  </Button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {PRESET_RESPONSES.map((r, i) => (
+                      <Button
+                        key={r.title}
+                        onClick={() => selectResponse(r.title)}
+                        className="justify-start bg-white text-black hover:bg-gray-200 h-10 px-4 rounded-lg font-mono text-[11px] font-bold tracking-wider transition-all whitespace-normal text-left"
+                      >
+                        {i + 1}. {r.title}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="flex justify-between items-center mt-3 px-2">

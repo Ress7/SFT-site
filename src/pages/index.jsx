@@ -32,7 +32,7 @@ export default function Pages() {
       <Route path="/account" element={<Layout currentPageName="Account"><Account /></Layout>} />
   <Route path="/subscription" element={<Layout currentPageName="Subscription"><Subscription /></Layout>} />
   <Route path="/meetorion" element={<MeetOrion />} />
-  <Route path="/application" element={<Application />} />
+  <Route path="/application" element={<Layout currentPageName="Application"><Application /></Layout>} />
   <Route path="/createaccount" element={<CreateAccount />} />
   <Route path="/traderprofile" element={<Layout currentPageName="TraderProfile"><TraderProfile /></Layout>} />
   <Route path="/trader/:stoneforgeId" element={<Layout currentPageName="TraderProfile"><TraderProfile /></Layout>} />

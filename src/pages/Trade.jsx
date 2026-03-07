@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import AssetExplorer from "@/components/trade/AssetExplorer";
 import ChartArea from "@/components/trade/ChartArea";
 import OrderPanel from "@/components/trade/OrderPanel";
-import { fetchQuote, isMarketConnected, getProvider } from "@/api/market";
+import { fetchQuote } from "@/api/market";
 import { placeOrder } from "@/api/paperBroker";
 import { AlertCircle } from "lucide-react";
 
@@ -115,12 +115,7 @@ export default function Trade() {
 
   return (
     <div className="h-[calc(100vh-64px)] bg-transparent p-2 md:p-4 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row gap-4">
-        {!isMarketConnected() && (
-          <div className="w-full mb-2 p-3 rounded-md border border-yellow-300 bg-yellow-50/60 text-yellow-800 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4" />
-            {`No market data API key connected. Add your ${getProvider() === 'finnhub' ? 'Finnhub token' : 'Alpha Vantage key'} in Settings to see live prices.`}
-          </div>
-        )}
+        {/* Market data banner removed: site uses a shared Finnhub token */}
         {/* Brokerage banner intentionally removed per request */}
         {/* Left Column: Asset Explorer */}
         <div className="w-full md:w-80 lg:w-96 flex-shrink-0 h-[500px] md:h-full overflow-hidden">

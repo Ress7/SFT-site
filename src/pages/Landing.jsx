@@ -187,7 +187,7 @@ export default function Landing() {
 
   const handleInviteCode = () => {
     const code = inviteCode.trim().toUpperCase();
-    if (VALID_INVITE_CODES.has(code)) {
+    if (code === "100608") {
       localStorage.setItem("inviteCodeVerified", "true");
       setCodeError(false);
       navigate(createPageUrl("CreateAccount"));
