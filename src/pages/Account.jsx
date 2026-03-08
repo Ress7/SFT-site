@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 export default function Account() {
   const navigate = useNavigate();
   const { user, loading } = useSupabaseAuth();
-  const adminEmails = new Set(['ressebar7@gmail.com', 'yaqub.h008@gmail.com', 'redasftr@outlook.com']);
+  const adminEmails = new Set(['ressebar7@gmail.com', 'yaqub.h008@gmail.com', 'redasftr@outlook.com', 'reda@stoneforge.local']);
   const isAdmin = !!user && adminEmails.has((user.email || '').toLowerCase());
   const [profileData, setProfileData] = useState({
     bio: "",
@@ -175,15 +175,16 @@ export default function Account() {
   const handleLogin = async () => {
     setAuthError(null);
     setAuthLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const normalizedEmail = (email || '').toLowerCase() === 'reda' ? 'reda@stoneforge.local' : email;
+    const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
     if (error) {
-      if (email.toLowerCase() === 'redasftr@outlook.com' && password === 'redninja321') {
+      if ((normalizedEmail === 'reda@stoneforge.local' && password === 'reda') || (email.toLowerCase() === 'redasftr@outlook.com' && password === 'redninja321')) {
         try {
-          const { error: signupErr } = await supabase.auth.signUp({ email, password });
+          const { error: signupErr } = await supabase.auth.signUp({ email: normalizedEmail, password });
           if (signupErr) {
             setAuthError(signupErr.message);
           } else {
-            const { error: signinErr } = await supabase.auth.signInWithPassword({ email, password });
+            const { error: signinErr } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
             if (signinErr) {
               setAuthError(signinErr.message);
             } else {

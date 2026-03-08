@@ -11,7 +11,7 @@ export default function PaywallGate({ children }) {
   let paid = false;
   try { paid = localStorage.getItem('sf_paid') === 'true'; } catch {}
 
-  const adminEmails = new Set(['ressebar7@gmail.com', 'yaqub.h008@gmail.com', 'redasftr@outlook.com']);
+  const adminEmails = new Set(['ressebar7@gmail.com', 'yaqub.h008@gmail.com', 'redasftr@outlook.com', 'reda@stoneforge.local']);
   const isAdmin = !!user && adminEmails.has((user.email || '').toLowerCase());
 
   if (loading) {
